@@ -1,12 +1,15 @@
+![这是图片](./images/title.png)
 <div align="center">
 
-# Grok Search MCP
+<!-- # Grok Search MCP -->
 
 **通过 MCP 协议将 Grok 搜索能力集成到 Claude，显著增强文档检索与事实核查能力**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![FastMCP](https://img.shields.io/badge/FastMCP-0.1.0+-green.svg)](https://github.com/jlowin/fastmcp)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/) [![FastMCP](https://img.shields.io/badge/FastMCP-0.1.0+-green.svg)](https://github.com/jlowin/fastmcp)
+
+⭐ 在GitHub上给我们点星~您的支持对我们意义重大！ 🙏😊
+
+[English](./docs/README_EN.md) | 简体中文
 
 </div>
 
