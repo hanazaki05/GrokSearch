@@ -136,7 +136,18 @@ class GrokSearchProvider(BaseSearchProvider):
                             content += delta["content"]
                 except (json.JSONDecodeError, IndexError):
                     continue
-
+                
+        if not content and full_body_buffer:
+            try:
+                full_text = "".join(full_body_buffer)
+                data = json.loads(full_text)
+                if "choices" in data and len(data["choices"]) > 0:
+                    message = data["choices"][0].get("message", {})
+                    content = message.get("content", "")
+            except json.JSONDecodeError:
+                pass
+        
+        await log_info(ctx, f"content: {content}", config.debug_enabled)
 
         return content
 
