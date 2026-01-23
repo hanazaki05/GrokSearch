@@ -13,18 +13,18 @@ from ..config import config
 
 
 def get_local_time_info() -> str:
-    """获取本地时间信息，用于注入到搜索查询中"""
+    """Get local time information for injection into search queries"""
     try:
-        # 尝试获取系统本地时区
+        # Try to get system local timezone
         local_tz = datetime.now().astimezone().tzinfo
         local_now = datetime.now(local_tz)
     except Exception:
-        # 降级使用 UTC
+        # Fallback to UTC
         local_now = datetime.now(timezone.utc)
 
-    # 格式化时间信息
-    weekdays_cn = ["星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"]
-    weekday = weekdays_cn[local_now.weekday()]
+    # Format time information
+    weekdays_en = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    weekday = weekdays_en[local_now.weekday()]
 
     return (
         f"[Current Time Context]\n"
@@ -35,8 +35,8 @@ def get_local_time_info() -> str:
 
 
 def _needs_time_context(query: str) -> bool:
-    """检查查询是否需要时间上下文"""
-    # 中文时间相关关键词
+    """Check if query needs time context"""
+    # Chinese time-related keywords
     cn_keywords = [
         "当前", "现在", "今天", "明天", "昨天",
         "本周", "上周", "下周", "这周",
@@ -45,7 +45,7 @@ def _needs_time_context(query: str) -> bool:
         "最新", "最近", "近期", "刚刚", "刚才",
         "实时", "即时", "目前",
     ]
-    # 英文时间相关关键词
+    # English time-related keywords
     en_keywords = [
         "current", "now", "today", "tomorrow", "yesterday",
         "this week", "last week", "next week",
@@ -71,7 +71,7 @@ RETRYABLE_STATUS_CODES = {408, 429, 500, 502, 503, 504}
 
 
 def _is_retryable_exception(exc) -> bool:
-    """检查异常是否可重试"""
+    """Check if exception is retryable"""
     if isinstance(exc, (httpx.TimeoutException, httpx.NetworkError, httpx.ConnectError, httpx.RemoteProtocolError)):
         return True
     if isinstance(exc, httpx.HTTPStatusError):
@@ -80,7 +80,7 @@ def _is_retryable_exception(exc) -> bool:
 
 
 class _WaitWithRetryAfter(wait_base):
-    """等待策略：优先使用 Retry-After 头，否则使用指数退避"""
+    """Wait strategy: prioritize Retry-After header, otherwise use exponential backoff"""
 
     def __init__(self, multiplier: float, max_wait: int):
         self._base_wait = wait_random_exponential(multiplier=multiplier, max=max_wait)
@@ -98,7 +98,7 @@ class _WaitWithRetryAfter(wait_base):
         return self._base_wait(retry_state)
 
     def _parse_retry_after(self, response: httpx.Response) -> Optional[float]:
-        """解析 Retry-After 头（支持秒数或 HTTP 日期格式）"""
+        """Parse Retry-After header (supports seconds or HTTP date format)"""
         header = response.headers.get("Retry-After")
         if not header:
             return None
@@ -139,7 +139,7 @@ class GrokSearchProvider(BaseSearchProvider):
         if max_results:
             return_prompt = "\n\nYou should return the results in a JSON format, and the results should at least be " + str(min_results) + " and at most be " + str(max_results) + " results."
 
-        # 仅在查询包含时间相关关键词时注入当前时间信息
+        # Only inject current time information when query contains time-related keywords
         if _needs_time_context(query):
             time_context = get_local_time_info() + "\n"
         else:
@@ -173,7 +173,7 @@ class GrokSearchProvider(BaseSearchProvider):
                     "role": "system",
                     "content": fetch_prompt,
                 },
-                {"role": "user", "content": url + "\n获取该网页内容并返回其结构化Markdown格式" },
+                {"role": "user", "content": url + "\nRetrieve the webpage content and return it in structured Markdown format" },
             ],
             "stream": True,
         }
@@ -190,12 +190,12 @@ class GrokSearchProvider(BaseSearchProvider):
             
             full_body_buffer.append(line)
 
-            # 兼容 "data: {...}" 和 "data:{...}" 两种 SSE 格式
+            # Compatible with both "data: {...}" and "data:{...}" SSE formats
             if line.startswith("data:"):
                 if line in ("data: [DONE]", "data:[DONE]"):
                     continue
                 try:
-                    # 去掉 "data:" 前缀，并去除可能的空格
+                    # Remove "data:" prefix and strip possible spaces
                     json_str = line[5:].lstrip()
                     data = json.loads(json_str)
                     choices = data.get("choices", [])
@@ -221,7 +221,7 @@ class GrokSearchProvider(BaseSearchProvider):
         return content
 
     async def _execute_stream_with_retry(self, headers: dict, payload: dict, ctx=None) -> str:
-        """执行带重试机制的流式 HTTP 请求"""
+        """Execute streaming HTTP request with retry mechanism"""
         timeout = httpx.Timeout(connect=6.0, read=120.0, write=10.0, pool=None)
 
         async with httpx.AsyncClient(timeout=timeout, follow_redirects=True) as client:

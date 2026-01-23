@@ -1,21 +1,21 @@
 import sys
 from pathlib import Path
 
-# 支持直接运行：添加 src 目录到 Python 路径
+# Support direct execution: add src directory to Python path
 src_dir = Path(__file__).parent.parent
 if str(src_dir) not in sys.path:
     sys.path.insert(0, str(src_dir))
 
 from fastmcp import FastMCP, Context
 
-# 尝试使用绝对导入（支持 mcp run）
+# Try using absolute imports (supports mcp run)
 try:
     from grok_search.providers.grok import GrokSearchProvider
     from grok_search.utils import format_search_results
     from grok_search.logger import log_info
     from grok_search.config import config
 except ImportError:
-    # 降级到相对导入（pip install -e . 后）
+    # Fallback to relative imports (after pip install -e .)
     from .providers.grok import GrokSearchProvider
     from .utils import format_search_results
     from .logger import log_info
@@ -57,7 +57,7 @@ async def web_search(query: str, platform: str = "", min_results: int = 3, max_r
         error_msg = str(e)
         if ctx:
             await ctx.report_progress(error_msg)
-        return f"配置错误: {error_msg}"
+        return f"Configuration error: {error_msg}"
 
     grok_provider = GrokSearchProvider(api_url, api_key, model)
 
@@ -108,7 +108,7 @@ async def web_fetch(url: str, ctx: Context = None) -> str:
         error_msg = str(e)
         if ctx:
             await ctx.report_progress(error_msg)
-        return f"配置错误: {error_msg}"
+        return f"Configuration error: {error_msg}"
     await log_info(ctx, f"Begin Fetch: {url}", config.debug_enabled)
     grok_provider = GrokSearchProvider(api_url, api_key, model)
     results = await grok_provider.fetch(url, ctx)
@@ -158,9 +158,9 @@ async def get_config_info() -> str:
 
     config_info = config.get_config_info()
 
-    # 添加连接测试
+    # Add connection test
     test_result = {
-        "status": "未测试",
+        "status": "Not tested",
         "message": "",
         "response_time_ms": 0
     }
@@ -169,10 +169,10 @@ async def get_config_info() -> str:
         api_url = config.grok_api_url
         api_key = config.grok_api_key
 
-        # 构建 /models 端点 URL
+        # Build /models endpoint URL
         models_url = f"{api_url.rstrip('/')}/models"
 
-        # 发送测试请求
+        # Send test request
         import time
         start_time = time.time()
 
@@ -185,21 +185,21 @@ async def get_config_info() -> str:
                 }
             )
 
-            response_time = (time.time() - start_time) * 1000  # 转换为毫秒
+            response_time = (time.time() - start_time) * 1000  # Convert to milliseconds
 
             if response.status_code == 200:
-                test_result["status"] = "✅ 连接成功"
-                test_result["message"] = f"成功获取模型列表 (HTTP {response.status_code})"
+                test_result["status"] = "✅ Connection successful"
+                test_result["message"] = f"Successfully retrieved model list (HTTP {response.status_code})"
                 test_result["response_time_ms"] = round(response_time, 2)
 
-                # 尝试解析返回的模型列表
+                # Try to parse returned model list
                 try:
                     models_data = response.json()
                     if "data" in models_data and isinstance(models_data["data"], list):
                         model_count = len(models_data["data"])
-                        test_result["message"] += f"，共 {model_count} 个模型"
+                        test_result["message"] += f", total {model_count} models"
 
-                        # 提取所有模型的 ID/名称
+                        # Extract all model IDs/names
                         model_names = []
                         for model in models_data["data"]:
                             if isinstance(model, dict) and "id" in model:
@@ -210,22 +210,22 @@ async def get_config_info() -> str:
                 except:
                     pass
             else:
-                test_result["status"] = "⚠️ 连接异常"
+                test_result["status"] = "⚠️ Connection abnormal"
                 test_result["message"] = f"HTTP {response.status_code}: {response.text[:100]}"
                 test_result["response_time_ms"] = round(response_time, 2)
 
     except httpx.TimeoutException:
-        test_result["status"] = "❌ 连接超时"
-        test_result["message"] = "请求超时（10秒），请检查网络连接或 API URL"
+        test_result["status"] = "❌ Connection timeout"
+        test_result["message"] = "Request timeout (10 seconds), please check network connection or API URL"
     except httpx.RequestError as e:
-        test_result["status"] = "❌ 连接失败"
-        test_result["message"] = f"网络错误: {str(e)}"
+        test_result["status"] = "❌ Connection failed"
+        test_result["message"] = f"Network error: {str(e)}"
     except ValueError as e:
-        test_result["status"] = "❌ 配置错误"
+        test_result["status"] = "❌ Configuration error"
         test_result["message"] = str(e)
     except Exception as e:
-        test_result["status"] = "❌ 测试失败"
-        test_result["message"] = f"未知错误: {str(e)}"
+        test_result["status"] = "❌ Test failed"
+        test_result["message"] = f"Unknown error: {str(e)}"
 
     config_info["connection_test"] = test_result
 
@@ -273,10 +273,10 @@ async def switch_model(model: str) -> str:
         current_model = config.grok_model
 
         result = {
-            "status": "✅ 成功",
+            "status": "✅ Success",
             "previous_model": previous_model,
             "current_model": current_model,
-            "message": f"模型已从 {previous_model} 切换到 {current_model}",
+            "message": f"Model switched from {previous_model} to {current_model}",
             "config_file": str(config.config_file)
         }
 
@@ -284,14 +284,14 @@ async def switch_model(model: str) -> str:
 
     except ValueError as e:
         result = {
-            "status": "❌ 失败",
-            "message": f"切换模型失败: {str(e)}"
+            "status": "❌ Failed",
+            "message": f"Failed to switch model: {str(e)}"
         }
         return json.dumps(result, ensure_ascii=False, indent=2)
     except Exception as e:
         result = {
-            "status": "❌ 失败",
-            "message": f"未知错误: {str(e)}"
+            "status": "❌ Failed",
+            "message": f"Unknown error: {str(e)}"
         }
         return json.dumps(result, ensure_ascii=False, indent=2)
 
@@ -334,17 +334,17 @@ async def toggle_builtin_tools(action: str = "status") -> str:
         settings_path.parent.mkdir(parents=True, exist_ok=True)
         with open(settings_path, 'w', encoding='utf-8') as f:
             json.dump(settings, f, ensure_ascii=False, indent=2)
-        msg = "官方工具已禁用"
+        msg = "Built-in tools disabled"
         blocked = True
     elif action in ["off", "disable"]:
         deny[:] = [t for t in deny if t not in tools]
         settings_path.parent.mkdir(parents=True, exist_ok=True)
         with open(settings_path, 'w', encoding='utf-8') as f:
             json.dump(settings, f, ensure_ascii=False, indent=2)
-        msg = "官方工具已启用"
+        msg = "Built-in tools enabled"
         blocked = False
     else:
-        msg = f"官方工具当前{'已禁用' if blocked else '已启用'}"
+        msg = f"Built-in tools currently {'disabled' if blocked else 'enabled'}"
 
     return json.dumps({
         "blocked": blocked,

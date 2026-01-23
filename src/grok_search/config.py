@@ -41,7 +41,7 @@ class Config:
             with open(self.config_file, 'w', encoding='utf-8') as f:
                 json.dump(config_data, f, ensure_ascii=False, indent=2)
         except IOError as e:
-            raise ValueError(f"无法保存配置文件: {str(e)}")
+            raise ValueError(f"Unable to save config file: {str(e)}")
 
     @property
     def debug_enabled(self) -> bool:
@@ -64,8 +64,8 @@ class Config:
         url = os.getenv("GROK_API_URL")
         if not url:
             raise ValueError(
-                f"Grok API URL 未配置！\n"
-                f"请使用以下命令配置 MCP 服务器：\n{self._SETUP_COMMAND}"
+                f"Grok API URL not configured!\n"
+                f"Please use the following command to configure MCP server:\n{self._SETUP_COMMAND}"
             )
         return url
 
@@ -74,8 +74,8 @@ class Config:
         key = os.getenv("GROK_API_KEY")
         if not key:
             raise ValueError(
-                f"Grok API Key 未配置！\n"
-                f"请使用以下命令配置 MCP 服务器：\n{self._SETUP_COMMAND}"
+                f"Grok API Key not configured!\n"
+                f"Please use the following command to configure MCP server:\n{self._SETUP_COMMAND}"
             )
         return key
 
@@ -114,22 +114,22 @@ class Config:
 
     @staticmethod
     def _mask_api_key(key: str) -> str:
-        """脱敏显示 API Key，只显示前后各 4 个字符"""
+        """Mask API Key for display, showing only first and last 4 characters"""
         if not key or len(key) <= 8:
             return "***"
         return f"{key[:4]}{'*' * (len(key) - 8)}{key[-4:]}"
 
     def get_config_info(self) -> dict:
-        """获取配置信息（API Key 已脱敏）"""
+        """Get configuration information (API Key is masked)"""
         try:
             api_url = self.grok_api_url
             api_key_raw = self.grok_api_key
             api_key_masked = self._mask_api_key(api_key_raw)
-            config_status = "✅ 配置完整"
+            config_status = "✅ Configuration complete"
         except ValueError as e:
-            api_url = "未配置"
-            api_key_masked = "未配置"
-            config_status = f"❌ 配置错误: {str(e)}"
+            api_url = "Not configured"
+            api_key_masked = "Not configured"
+            config_status = f"❌ Configuration error: {str(e)}"
 
         return {
             "GROK_API_URL": api_url,
