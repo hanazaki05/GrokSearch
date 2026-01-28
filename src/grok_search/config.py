@@ -97,6 +97,12 @@ class Config:
         if self._cached_model is not None:
             return self._cached_model
 
+        # Check environment variable first (highest priority)
+        env_model = os.getenv("GROK_SEARCH_MCP_MODEL")
+        if env_model:
+            self._cached_model = env_model
+            return env_model
+
         config_data = self._load_config_file()
         file_model = config_data.get("model")
         if file_model:
