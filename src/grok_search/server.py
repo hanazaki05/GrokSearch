@@ -355,7 +355,51 @@ async def toggle_builtin_tools(action: str = "status") -> str:
 
 
 def main():
-    mcp.run(transport="stdio")
+    import signal
+    import os
+    import threading
+
+    # 信号处理（仅主线程）
+    if threading.current_thread() is threading.main_thread():
+        def handle_shutdown(signum, frame):
+            os._exit(0)
+        signal.signal(signal.SIGINT, handle_shutdown)
+        if sys.platform != 'win32':
+            signal.signal(signal.SIGTERM, handle_shutdown)
+
+    # Windows 父进程监控
+    if sys.platform == 'win32':
+        import time
+        import ctypes
+        parent_pid = os.getppid()
+
+        def is_parent_alive(pid):
+            """Windows 下检查进程是否存活"""
+            PROCESS_QUERY_LIMITED_INFORMATION = 0x1000
+            STILL_ACTIVE = 259
+            kernel32 = ctypes.windll.kernel32
+            handle = kernel32.OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, False, pid)
+            if not handle:
+                return False
+            exit_code = ctypes.c_ulong()
+            result = kernel32.GetExitCodeProcess(handle, ctypes.byref(exit_code))
+            kernel32.CloseHandle(handle)
+            return result and exit_code.value == STILL_ACTIVE
+
+        def monitor_parent():
+            while True:
+                if not is_parent_alive(parent_pid):
+                    os._exit(0)
+                time.sleep(2)
+
+        threading.Thread(target=monitor_parent, daemon=True).start()
+
+    try:
+        mcp.run(transport="stdio")
+    except KeyboardInterrupt:
+        pass
+    finally:
+        os._exit(0)
 
 
 if __name__ == "__main__":
