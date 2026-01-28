@@ -359,7 +359,7 @@ def main():
     import os
     import threading
 
-    # 信号处理（仅主线程）
+    # Signal handling (main thread only)
     if threading.current_thread() is threading.main_thread():
         def handle_shutdown(signum, frame):
             os._exit(0)
@@ -367,14 +367,14 @@ def main():
         if sys.platform != 'win32':
             signal.signal(signal.SIGTERM, handle_shutdown)
 
-    # Windows 父进程监控
+    # Windows parent process monitoring
     if sys.platform == 'win32':
         import time
         import ctypes
         parent_pid = os.getppid()
 
         def is_parent_alive(pid):
-            """Windows 下检查进程是否存活"""
+            """Check if process is alive on Windows"""
             PROCESS_QUERY_LIMITED_INFORMATION = 0x1000
             STILL_ACTIVE = 259
             kernel32 = ctypes.windll.kernel32
