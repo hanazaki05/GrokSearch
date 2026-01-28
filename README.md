@@ -100,12 +100,13 @@ claude mcp add-json grok-search --scope user '{
   "command": "uvx",
   "args": [
     "--from",
-    "git+https://github.com/GuDaStudio/GrokSearch",
+    "git+https://github.com/hanazaki05/GrokSearch",
     "grok-search"
   ],
   "env": {
     "GROK_API_URL": "https://your-api-endpoint.com/v1",
-    "GROK_API_KEY": "your-api-key-here"
+    "GROK_API_KEY": "your-api-key-here",
+    "GROK_SEARCH_MCP_MODEL": "grok-4-fast"
   }
 }'
 ```
@@ -474,5 +475,5 @@ A: 在 Claude 对话中说"显示 grok-search 配置信息"，查看连接测试
 <div align="center">
 
 **如果这个项目对您有帮助，请给个 ⭐ Star！**
-[![Star History Chart](https://api.star-history.com/svg?repos=GuDaStudio/GrokSearch&type=date&legend=top-left)](https://www.star-history.com/#GuDaStudio/GrokSearch&type=date&legend=top-left)
+[![Star History Chart](https://api.star-history.com/svg?repos=hanazaki05/GrokSearch&type=date&legend=top-left)](https://www.star-history.com/#hanazaki05/GrokSearch&type=date&legend=top-left)
 </div>

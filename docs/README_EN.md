@@ -97,12 +97,13 @@ claude mcp add-json grok-search --scope user '{
   "command": "uvx",
   "args": [
     "--from",
-    "git+https://github.com/GuDaStudio/GrokSearch",
+    "git+https://github.com/hanazaki05/GrokSearch",
     "grok-search"
   ],
   "env": {
     "GROK_API_URL": "https://your-api-endpoint.com/v1",
-    "GROK_API_KEY": "your-api-key-here"
+    "GROK_API_KEY": "your-api-key-here",
+    "GROK_SEARCH_MCP_MODEL": "grok-4-fast"
   }
 }'
 ```
@@ -115,6 +116,7 @@ Configuration is done through **environment variables**, set directly in the `en
 |---------------------|----------|---------|-------------|
 | `GROK_API_URL` | ✅ | - | Grok API endpoint (OpenAI-compatible format) |
 | `GROK_API_KEY` | ✅ | - | Your API Key |
+| `GROK_SEARCH_MCP_MODEL` | ❌ | `grok-4-fast` | Model to use for search/fetch operations |
 | `GROK_DEBUG` | ❌ | `false` | Enable debug mode (`true`/`false`) |
 | `GROK_LOG_LEVEL` | ❌ | `INFO` | Log level (DEBUG/INFO/WARNING/ERROR) |
 | `GROK_LOG_DIR` | ❌ | `logs` | Log file storage directory |
@@ -501,6 +503,6 @@ This project is open source under the [MIT License](LICENSE).
 <div align="center">
 
 **If this project helps you, please give it a ⭐ Star!**
-[![Star History Chart](https://api.star-history.com/svg?repos=GuDaStudio/GrokSearch&type=date&legend=top-left)](https://www.star-history.com/#GuDaStudio/GrokSearch&type=date&legend=top-left)
+[![Star History Chart](https://api.star-history.com/svg?repos=hanazaki05/GrokSearch&type=date&legend=top-left)](https://www.star-history.com/#hanazaki05/GrokSearch&type=date&legend=top-left)
 
 </div>
