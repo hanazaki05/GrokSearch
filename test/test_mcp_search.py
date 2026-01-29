@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""Test MCP search with environment variables from testenvar.1.log"""
+"""Test MCP search with environment variables"""
 
 import asyncio
 import os
 import sys
 
 # Set environment variables (use /v1 endpoint for API)
-os.environ["GROK_API_URL"] = "https://api.gptacg.top/v1"
-os.environ["GROK_API_KEY"] = "sk-DWhtbZw1G7jn1lgeTLgI8wz9P8zPYYTXeqqcNhFtlli8ak5y"
+os.environ["GROK_API_URL"] = "https://your-api-endpoint.com/v1"
+os.environ["GROK_API_KEY"] = "your-api-key-here"
 os.environ["GROK_SEARCH_MCP_MODEL"] = "gemini-3-flash-preview"
 os.environ["GROK_DEBUG"] = "true"
 

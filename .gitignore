@@ -155,3 +155,4 @@ cython_debug/
 
 # macOS
 .DS_Store
+.ace-tool/
